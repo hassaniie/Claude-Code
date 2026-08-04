@@ -1,0 +1,93 @@
+/**
+ * Design tokens — mapped 1:1 from the Figma variables on
+ * "Energy Monitoring System EMS" (node 3159:8131).
+ *
+ * Figma variable path  ->  CSS custom property
+ *   text/primary       ->  --text-primary
+ *   status/success/…   ->  --status-success-…
+ *
+ * Values are verbatim from Figma's `get_variable_defs`; do not hand-edit
+ * without re-pulling from the file.
+ */
+
+:root {
+  /* ---- Text ---------------------------------------------------------- */
+  --text-primary: #1d1f20;
+  --text-secondary: #555e67;
+  --text-tertiary: #9098a0;
+  --text-disabled: #9098a0;
+  --text-brand: #266df0;
+
+  /* ---- Background ---------------------------------------------------- */
+  --background-primary: #ffffff;
+  --background-secondary: #edeef0;
+  --background-tertiary: #f4f5f6;
+  --surface-overlay: #f4f5f6;
+  --overlay: #ffffff;
+  --foreground-overlay: #18181b;
+
+  /* ---- Border -------------------------------------------------------- */
+  --border-default: #edeef0;
+  --border-subtle: #f4f5f6;
+  --border-strong: #d3d5d9;
+  --border-brand: #266df0;
+
+  /* ---- Icon ---------------------------------------------------------- */
+  --icon-primary: #1d1f20;
+  --icon-secondary: #555e67;
+  --icon-on-color: #ffffff;
+
+  /* ---- Brand --------------------------------------------------------- */
+  --brand-primary: #266df0;
+  --brand-hover: #538bf3;
+  --brand-muted: #d9e5fc;
+  --blue-100: #f5f8fe;
+  --navy-300: #4e7bab;
+
+  /* ---- Status: success ----------------------------------------------- */
+  --status-success-default: #22b14c;
+  --status-success-strong: #117f33;
+  --status-success-text: #117f33;
+  --status-success-icon: #22b14c;
+  --status-success-border: #4bd75f;
+  --status-success-background: #f0fdf2;
+
+  /* ---- Status: warning ----------------------------------------------- */
+  --status-warning-default: #ec9e00;
+  --status-warning-strong: #b46f00;
+  --status-warning-text: #b46f00;
+  --warning-100: #fffaeb;
+
+  /* ---- Status: danger ------------------------------------------------ */
+  --status-danger-default: #ea2828;
+  --status-danger-strong: #b71212;
+  --status-danger-text: #b71212;
+  --status-danger-border: #f76161;
+  --status-danger-background: #ffeded;
+
+  /* ---- Status: info -------------------------------------------------- */
+  --status-info-default: #07a5c7;
+  --status-info-strong: #057795;
+  --status-info-text: #057795;
+
+  /* ---- Status: neutral ----------------------------------------------- */
+  --status-neutral-default: #999999;
+  --status-neutral-strong: #2e2e2e;
+  --status-neutral-subtle: #e5e5e5;
+  --status-neutral-text: #404f68;
+  --status-neutral-icon: #616161;
+  --status-neutral-background: #f9f9f9;
+
+  /* ---- Typography ---------------------------------------------------- */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* ---- Effects ------------------------------------------------------- */
+  /* shadow-overlay, as composed in Figma */
+  --shadow-overlay:
+    0 14px 28px rgba(0, 0, 0, 0.08), 0 -6px 12px rgba(0, 0, 0, 0.03),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+  /* the 1px hairline shadow used on the search field */
+  --shadow-field: 0 1px 1.5px rgba(24, 41, 75, 0.04);
+  /* the tab-switcher active pill */
+  --shadow-pill: 0 0.6px 1px rgba(0, 0, 0, 0.12);
+}
