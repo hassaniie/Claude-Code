@@ -20,7 +20,7 @@ import { SavingGauge } from '../charts/SavingGauge';
 
 export function LoadCurveCard() {
   return (
-    <Card title="Real-Time Load Curve" meta="(24h)" className="col-578">
+    <Card title="Real-Time Load Curve" meta="(24h)" className="col-578 card--gap-14">
       <LoadCurveChart />
       <div className="legend legend--split">
         <span className="legend__unit">MW</span>
@@ -60,7 +60,7 @@ export function LoadCurveCard() {
 
 export function CostComparisonCard() {
   return (
-    <Card title="Energy Cost Comparison" meta="Monthly" className="col-578">
+    <Card title="Energy Cost Comparison" meta="Monthly" className="col-578 card--gap-14">
       <CostComparisonChart />
       <div className="legend legend--split">
         <span className="legend__unit">PKR (Millions)</span>
@@ -86,16 +86,23 @@ export function CostComparisonCard() {
 
 export function SavingSummaryCard() {
   return (
-    <Card title="Saving Summary" meta="Monthly" className="col-292">
+    <Card title="Saving Summary" meta="Monthly" className="col-292 card--gap-19">
       <SavingGauge />
       <div className="summary-rows">
-        {savingSummary.rows.map((row) => (
-          <div className="summary-row" key={row.label}>
-            <span className="summary-row__label">{row.label}</span>
-            <span>
-              <span className="summary-row__value">{row.value}</span>
-              <span className="summary-row__unit">{row.unit}</span>
-            </span>
+        {savingSummary.groups.map((group, gi) => (
+          <div className="summary-group" key={gi}>
+            <span className="summary-group__rule" />
+            <div className="summary-group__lines">
+              {group.map((row) => (
+                <div className="summary-row" key={row.label}>
+                  <span className="summary-row__label">{row.label}</span>
+                  <span className="summary-row__figure">
+                    <span className="summary-row__value">{row.value}</span>
+                    <span className="summary-row__unit">{row.unit}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         ))}
       </div>
@@ -107,21 +114,24 @@ export function SavingSummaryCard() {
 
 export function EnergyBreakdownCard() {
   return (
-    <Card title="Energy Breakdown" className="col-529">
+    <Card title="Energy Breakdown" className="col-529 card--gap-22">
       <div className="breakdown">
-        <DonutChart />
-        <div className="breakdown__legend">
-          {energyBreakdown.slices.map((slice) => (
-            <div className="breakdown__item" key={slice.label}>
-              <span className="breakdown__dot" style={{ background: slice.color }} />
-              <span className="breakdown__name">{slice.label}</span>
-              <span className="breakdown__pct">{slice.value.toFixed(1)}%</span>
-            </div>
-          ))}
+        <div className="breakdown__row">
+          <DonutChart />
+          <div className="breakdown__legend">
+            {energyBreakdown.slices.map((slice) => (
+              <div className="breakdown__item" key={slice.label}>
+                <span className="breakdown__dot" style={{ background: slice.color }} />
+                <span className="breakdown__name">{slice.label}</span>
+                <span className="breakdown__pct">{slice.value.toFixed(1)}%</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-      <div className="breakdown__footer">
-        Total Zones: <strong>{energyBreakdown.totalZones}</strong>
+        <div className="breakdown__footer">
+          <span>Total Zones:</span>
+          <strong>{energyBreakdown.totalZones}</strong>
+        </div>
       </div>
     </Card>
   );
@@ -129,46 +139,39 @@ export function EnergyBreakdownCard() {
 
 /* ------------------------------------------------- row 3: top equipment */
 
-const equipmentIcons = ['boiler', 'chiller', 'compressor', 'productionLine', 'ahu'];
-
 export function TopEquipmentCard() {
-  const max = Math.max(...topEquipment.rows.map((r) => r.percent));
-
   return (
-    <Card title="Top Energy Consuming Equipment" className="col-529">
-      <table className="table">
-        <thead>
-          <tr>
-            <th>{topEquipment.columns[0]}</th>
-            <th className="table__num">{topEquipment.columns[1]}</th>
-            <th className="table__meter-cell">{topEquipment.columns[2]}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {topEquipment.rows.map((row, i) => (
-            <tr key={row.name}>
-              <td>
-                <span className="table__equipment">
-                  <Icon name={equipmentIcons[i]} size={14} color="var(--icon-secondary)" />
-                  {row.name}
-                </span>
-              </td>
-              <td className="table__num">{row.consumption}</td>
-              <td className="table__meter-cell">
-                <span className="meter">
-                  <span className="meter__track">
-                    <span
-                      className="meter__fill"
-                      style={{ width: `${(row.percent / max) * 100}%` }}
-                    />
-                  </span>
-                  <span className="meter__value">{row.percent}%</span>
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <Card title="Top Energy Consuming Equipment" className="col-529 card--gap-22">
+      <div className="equip">
+        <div className="equip__row equip__row--head">
+          <div className="equip__name">
+            <span className="equip__head-label equip__head-label--first">
+              {topEquipment.columns[0]}
+            </span>
+          </div>
+          <div className="equip__figures equip__figures--head">
+            <span className="equip__head-label">{topEquipment.columns[1]}</span>
+            <span className="equip__head-label">{topEquipment.columns[2]}</span>
+          </div>
+        </div>
+
+        {topEquipment.rows.map((row) => (
+          <div className="equip__row" key={row.name}>
+            <div className="equip__name">
+              <Icon name={row.icon} size={14} color="var(--icon-secondary)" />
+              <span className="equip__label">{row.name}</span>
+            </div>
+            <div className="equip__figures">
+              <span className="equip__consumption">{row.consumption}</span>
+              <span className="equip__bar-wrap">
+                {/* fixed pixel width, straight from the design — there is no track */}
+                <span className="equip__bar" style={{ width: row.bar }} />
+              </span>
+              <span className="equip__percent">{row.percent}</span>
+            </div>
+          </div>
+        ))}
+      </div>
     </Card>
   );
 }
@@ -212,33 +215,59 @@ export function UtilityOverviewCard() {
 
 /* -------------------------------------------------- row 4: power quality */
 
+/**
+ * Not built on <Card>: this one is full-bleed (Figma 3159:8696 has no padding
+ * on the container — only the 16px head), and its rows alternate white with
+ * status/neutral/background.
+ */
 export function PowerQualityCard() {
+  const [param, ...lanes] = powerQuality.columns;
+  const avg = lanes.pop() as string;
+
   return (
-    <Card title="Power Quality" className="col-564">
-      <table className="table table--banded">
-        <thead>
-          <tr>
-            <th>{powerQuality.columns[0]}</th>
-            {powerQuality.columns.slice(1).map((c) => (
-              <th key={c} className="table__num">
-                {c}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {powerQuality.rows.map((row) => (
-            <tr key={row.parameter}>
-              <td>{row.parameter}</td>
-              <td className="table__num">{row.l1}</td>
-              <td className="table__num">{row.l2}</td>
-              <td className="table__num">{row.l3}</td>
-              <td className="table__num table__avg">{row.avg}</td>
-            </tr>
+    <section className="card card--flush col-564">
+      <div className="pq__title">
+        <h2 className="card__title">Power Quality</h2>
+      </div>
+
+      <div className="pq">
+        <div className="pq__head">
+          <div className="pq__cell pq__cell--param">
+            <span className="pq__head-label">{param}</span>
+          </div>
+          {lanes.map((c) => (
+            <div className="pq__cell pq__cell--lane" key={c}>
+              <span className="pq__head-label">{c}</span>
+            </div>
           ))}
-        </tbody>
-      </table>
-    </Card>
+          <div className="pq__cell pq__cell--avg">
+            <span className="pq__head-label pq__avg-width">{avg}</span>
+          </div>
+        </div>
+
+        <div className="pq__body">
+          {powerQuality.rows.map((row, i) => (
+            <div className={`pq__row${i % 2 === 1 ? ' pq__row--alt' : ''}`} key={row.parameter}>
+              <div className="pq__cell pq__cell--param">
+                <span className="pq__param">{row.parameter}</span>
+              </div>
+              <div className="pq__cell pq__cell--lane">
+                <span className="pq__value">{row.l1}</span>
+              </div>
+              <div className="pq__cell pq__cell--lane">
+                <span className="pq__value">{row.l2}</span>
+              </div>
+              <div className="pq__cell pq__cell--lane">
+                <span className="pq__value">{row.l3}</span>
+              </div>
+              <div className="pq__cell pq__cell--avg">
+                <span className="pq__value pq__value--avg pq__avg-width">{row.avg}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -246,19 +275,30 @@ export function PowerQualityCard() {
 
 export function EnergyIntensityCard() {
   return (
-    <Card title="Energy Intensity" subtitle={energyIntensity.subtitle} className="col-442">
+    <section className="card card--flush col-442">
+      <div className="pq__title">
+        <h2 className="card__title">
+          Energy Intensity
+          <span className="card__subtitle"> {energyIntensity.subtitle}</span>
+        </h2>
+      </div>
+
       <div className="intensity">
-        {energyIntensity.stats.map((stat) => (
-          <div className="intensity__stat" key={stat.label}>
-            <span className="intensity__label">{stat.label}</span>
-            <span
-              className={`intensity__value${stat.tone === 'brand' ? ' intensity__value--brand' : ''}`}
-            >
-              {stat.value}
-            </span>
-            <span className="intensity__unit">{stat.unit}</span>
-          </div>
+        {energyIntensity.stats.map((stat, i) => (
+          <Fragment key={stat.label}>
+            {i > 0 ? <span className="intensity__rule" /> : null}
+            <div className="intensity__stat">
+              <span className="intensity__label">{stat.label}</span>
+              <div className="intensity__figure">
+                <span className="intensity__value" style={{ color: stat.color }}>
+                  {stat.value}
+                </span>
+                <span className="intensity__unit">{stat.unit}</span>
+              </div>
+            </div>
+          </Fragment>
         ))}
+        <span className="intensity__rule" />
         <div className="intensity__stat">
           <span className="intensity__label">{energyIntensity.improvement.label}</span>
           <span className="intensity__improve">{energyIntensity.improvement.value}</span>
@@ -272,9 +312,9 @@ export function EnergyIntensityCard() {
         color="#8286e0"
         gradientId="intensityFill"
         ariaLabel="Energy intensity trend"
-        height={128}
+        height={177}
       />
-    </Card>
+    </section>
   );
 }
 
@@ -282,10 +322,14 @@ export function EnergyIntensityCard() {
 
 export function EnergySavingTrendCard() {
   return (
-    <Card title="Energy Saving Trend" className="col-442">
-      <div>
-        <div className="trend__label">{energySavingTrend.label}</div>
-        <div className="trend__value">{energySavingTrend.value}</div>
+    <section className="card card--flush col-442">
+      <div className="pq__title">
+        <h2 className="card__title">Energy Saving Trend</h2>
+      </div>
+
+      <div className="trend">
+        <span className="trend__label">{energySavingTrend.label}</span>
+        <span className="trend__value">{energySavingTrend.value}</span>
       </div>
 
       <AreaTrendChart
@@ -296,8 +340,8 @@ export function EnergySavingTrendCard() {
         formatTick={energySavingTrend.yFormat}
         gradientId="savingFill"
         ariaLabel="Energy saving trend"
-        height={150}
+        height={197}
       />
-    </Card>
+    </section>
   );
 }

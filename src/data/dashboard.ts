@@ -141,12 +141,18 @@ export const costComparison = {
 /* ----------------------------------------------------- saving summary */
 
 export const savingSummary = {
-  percent: 16.5,
+  percent: '16.5%',
   caption: 'Total Savings',
-  rows: [
-    { label: 'Baseline Cost', value: '34,520,000', unit: 'PKR' },
-    { label: 'Actual Cost', value: '29,250,000', unit: 'PKR' },
-    { label: 'Total Savings', value: '53,65,000', unit: 'PKR' },
+  /**
+   * Two groups, each preceded by a divider (Figma 3159:8508 / 3159:8521) —
+   * the rule sits above each group, so Baseline and Actual are NOT separated.
+   */
+  groups: [
+    [
+      { label: 'Baseline Cost', value: '34,520,000', unit: 'PKR' },
+      { label: 'Actual Cost', value: '29,250,000', unit: 'PKR' },
+    ],
+    [{ label: 'Total Savings', value: '53,65,000', unit: 'PKR' }],
   ],
 };
 
@@ -168,14 +174,20 @@ export const energyBreakdown = {
 
 /* ------------------------------------------- top energy consuming equipment */
 
+/**
+ * `bar` is the literal pixel width from Figma (3159:8602 etc.). The design's
+ * bars are hand-set, not derived from the percentage — 10.8% renders at 47px
+ * against 21.6% at 112px, which is 42%, not 50% — so they are transcribed
+ * rather than computed.
+ */
 export const topEquipment = {
   columns: ['Equipment', 'Consumption (kWh)', '% of Total'],
   rows: [
-    { name: 'Boiler #1', consumption: '12,685', percent: 21.6 },
-    { name: 'Chiller plant', consumption: '12,685', percent: 19.4 },
-    { name: 'Air Compressor', consumption: '12,685', percent: 14.5 },
-    { name: 'Production Line -1', consumption: '12,685', percent: 13.2 },
-    { name: 'AHU - Block B', consumption: '12,685', percent: 10.8 },
+    { name: 'Boiler #1', consumption: '12,685', percent: '21.6%', bar: 112, icon: 'boiler' },
+    { name: 'Chiller plant', consumption: '12,685', percent: '19.4%', bar: 100, icon: 'chiller' },
+    { name: 'Air Compressor ', consumption: '12,685', percent: '14.5%', bar: 84, icon: 'compressor' },
+    { name: 'Production Line -1 ', consumption: '12,685', percent: '13.2%', bar: 69, icon: 'productionLine' },
+    { name: 'AHU - Block B', consumption: '12,685', percent: '10.8%', bar: 47, icon: 'ahu' },
   ],
 };
 
@@ -229,7 +241,7 @@ export const utilityOverview = [
 /* ------------------------------------------------------------ power quality */
 
 export const powerQuality = {
-  columns: ['PARAMETER', 'L1', 'L2', 'L3', 'AVG'],
+  columns: ['Parameter', 'L1', 'L2', 'L3', 'Avg'],
   rows: [
     { parameter: 'Voltage (V)', l1: '231', l2: '229', l3: '232', avg: '230' },
     { parameter: 'Current (A)', l1: '312', l2: '298', l3: '305', avg: '230' },
@@ -244,8 +256,9 @@ export const powerQuality = {
 export const energyIntensity = {
   subtitle: '(kWh / Unit Production)',
   stats: [
-    { label: 'This month', value: '0.245', unit: 'kWh / Unit', tone: 'brand' as Tone },
-    { label: 'Last month', value: '0.465', unit: 'kWh / Unit', tone: 'neutral' as Tone },
+    // colours are the design's own tokens: success/text and neutral/text
+    { label: 'This month', value: '0.245', unit: 'kWh / Unit', color: 'var(--status-success-text)' },
+    { label: 'Last month', value: '0.465', unit: 'kWh / Unit', color: 'var(--status-neutral-text)' },
   ],
   improvement: { label: 'Improvements', value: '15.2%' },
   months: ["Jan '26", "Feb '26", "Mar '26", "Apr '26", "May '26", "July '26"],

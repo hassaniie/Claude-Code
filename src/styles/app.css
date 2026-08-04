@@ -38,6 +38,16 @@ button {
   cursor: pointer;
 }
 
+/* headings carry UA margins that silently inflate every card — clear them */
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
 /* ================================================================ shell == */
 
 .app {
@@ -634,11 +644,24 @@ button {
   color: var(--text-secondary);
 }
 
+/* Figma 3159:8497 — 12px Regular, 20px leading, text/secondary */
 .card__meta {
-  font-size: 13px;
-  line-height: 16px;
-  color: var(--text-tertiary);
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--text-secondary);
   white-space: nowrap;
+}
+
+/*
+ * Per-card stack gaps, derived from each frame's own measurements:
+ * 578x280 card - 32 padding - 20 head - 214 chart = 14, and so on.
+ */
+.card--gap-14 {
+  gap: 14px;
+}
+
+.card--gap-19 {
+  gap: 19px;
 }
 
 .card__body {
@@ -656,13 +679,19 @@ button {
 .col-390 { flex: 390 1 0; }
 .col-292 { flex: 292 1 0; }
 
+/*
+ * Figma heights, as min-heights. The design's rows are fixed at 280/298, but
+ * browser text metrics land a few px off Figma's, so a hard height clips the
+ * last row of the denser cards. min-height holds the design at rest and lets
+ * a card grow rather than truncate; `.row` stretches its siblings to match.
+ */
 .row--charts .card,
 .row--data .card {
-  height: 280px;
+  min-height: 280px;
 }
 
 .row--wide .card {
-  height: 298px;
+  min-height: 298px;
 }
 
 /* ================================================================ charts */
@@ -742,26 +771,17 @@ button {
 
 /* =========================================================== saving gauge */
 
+/* Figma 3159:8498 — fixed 160x106 block, so the gauge does not stretch.
+   overflow visible so the 100% end label is not clipped by the viewBox. */
 .gauge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-.gauge__scale {
-  display: flex;
-  justify-content: space-between;
-  width: 160px;
-  margin-top: -6px;
-  font-size: 10px;
-  color: var(--text-tertiary);
+  flex-shrink: 0;
+  align-self: center;
+  overflow: visible;
 }
 
 .gauge__value {
   font-size: 20px;
-  font-weight: 600;
-  line-height: 24px;
+  font-weight: 700;
   fill: var(--text-primary);
 }
 
@@ -770,9 +790,39 @@ button {
   fill: var(--text-secondary);
 }
 
+.gauge__scale-end {
+  font-size: 8.689px;
+  fill: var(--status-neutral-default);
+}
+
+/* Figma 3159:8507 — 260px wide, 12px between groups */
 .summary-rows {
   display: flex;
   flex-direction: column;
+  gap: 12px;
+  width: 260px;
+  align-self: center;
+}
+
+.summary-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+/* the rule sits ABOVE each group, not between every row */
+.summary-group__rule {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: var(--border-default);
+}
+
+.summary-group__lines {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   width: 100%;
 }
 
@@ -780,39 +830,51 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding: 7px 0;
-  font-size: 13px;
-}
-
-.summary-row + .summary-row {
-  border-top: 1px solid var(--border-default);
+  width: 100%;
+  white-space: nowrap;
 }
 
 .summary-row__label {
+  font-size: 12px;
+  line-height: normal;
   color: var(--text-secondary);
 }
 
+.summary-row__figure {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
 .summary-row__value {
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
   color: var(--text-primary);
 }
 
 .summary-row__unit {
-  margin-left: 6px;
-  font-weight: 400;
-  font-size: 11px;
+  font-size: 12px;
+  line-height: 14px;
   color: var(--text-tertiary);
 }
 
 /* ========================================================= energy breakdown */
 
+/* Figma 3159:8535 */
 .breakdown {
   display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.breakdown__row {
+  display: flex;
   align-items: center;
-  gap: 16px;
-  flex: 1 0 0;
-  min-height: 0;
+  gap: 24px;
+  width: 100%;
+  padding: 0 10px;
 }
 
 .breakdown__donut {
@@ -821,54 +883,62 @@ button {
 
 .donut__total {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
   fill: var(--text-primary);
 }
 
 .donut__unit {
-  font-size: 11px;
+  font-size: 12px;
   fill: var(--text-secondary);
 }
 
 .breakdown__legend {
   display: flex;
   flex: 1 0 0;
-  min-width: 0;
+  min-width: 152px;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .breakdown__item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
+  gap: 6px;
+  width: 100%;
 }
 
 .breakdown__dot {
-  width: 8px;
-  height: 8px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
 .breakdown__name {
   flex: 1 0 0;
-  min-width: 0;
-  color: var(--text-primary);
+  min-width: 90px;
+  font-size: 14px;
+  line-height: 19px;
+  color: var(--text-secondary);
 }
 
 .breakdown__pct {
+  font-size: 14px;
   font-weight: 500;
+  line-height: 19px;
+  text-align: right;
   color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .breakdown__footer {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
-  gap: 6px;
+  gap: 8px;
   width: 100%;
-  font-size: 13px;
+  font-size: 14px;
+  line-height: normal;
   color: var(--text-secondary);
 }
 
@@ -877,114 +947,218 @@ button {
   color: var(--text-primary);
 }
 
-/* ================================================================= tables */
+/* ==================================================== power quality (3159:8696) */
 
-.table {
+/* full-bleed card: only the head is padded */
+.card--flush {
+  gap: 0;
+  padding: 0;
+}
+
+.pq__title {
+  display: flex;
+  align-items: center;
   width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
+  padding: 16px;
 }
 
-.table th {
-  font-weight: 500;
-  color: var(--text-secondary);
-  text-align: left;
-  padding: 0 0 10px;
-  border-bottom: 1px solid var(--border-default);
-  white-space: nowrap;
-}
-
-.table td {
-  padding: 9px 0;
-  border-bottom: 1px solid var(--border-default);
-  color: var(--text-primary);
-  white-space: nowrap;
-}
-
-.table tbody tr:last-child td {
-  border-bottom: 0;
-}
-
-.table__num {
-  text-align: right;
-}
-
-.table__equipment {
+.pq {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-primary);
-}
-
-.table__equipment .lucide {
-  color: var(--icon-secondary);
-}
-
-/* progress bar in the equipment table */
-.table__meter-cell {
-  width: 45%;
-}
-
-.meter {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.meter__track {
-  display: block;
   flex: 1 0 0;
-  min-width: 0;
-  height: 6px;
-  border-radius: 3px;
-  background: var(--background-tertiary);
+  min-height: 0;
+  flex-direction: column;
+  width: 100%;
+  border-top: 1px solid var(--border-default);
   overflow: hidden;
 }
 
-/* must be block — as an inline span the width/height would be ignored */
-.meter__fill {
-  display: block;
+.pq__head {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  width: 100%;
+  flex-shrink: 0;
+  background: var(--surface-overlay);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.pq__head-label {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 15px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.pq__body {
+  display: flex;
+  flex: 1 0 0;
+  min-height: 0;
+  flex-direction: column;
+  width: 100%;
+}
+
+.pq__row {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  width: 100%;
+  flex-shrink: 0;
+  background: var(--background-primary);
+  /* note: border/subtle, lighter than the header rule */
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* zebra striping — rows 2 and 4 */
+.pq__row--alt {
+  background: var(--status-neutral-background);
+}
+
+.pq__cell {
+  display: flex;
+  align-items: center;
   height: 100%;
-  border-radius: 3px;
-  background: var(--status-success-default);
+  padding: 10px 12px;
+}
+
+.pq__cell--param {
+  flex: 1 0 0;
+  min-width: 0;
+  padding-left: 16px;
+}
+
+.pq__cell--lane {
+  width: 72px;
+  flex-shrink: 0;
+}
+
+.pq__cell--avg {
+  flex-shrink: 0;
+  padding-right: 16px;
+}
+
+.pq__avg-width {
+  width: 44px;
+}
+
+.pq__param {
+  flex: 1 0 0;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: normal;
+  color: var(--text-primary);
+}
+
+/* values are left-aligned in their fixed-width columns, not right-aligned */
+.pq__value {
+  font-size: 13px;
+  line-height: normal;
+  color: var(--text-primary);
+}
+
+.pq__value--avg {
+  font-weight: 600;
+}
+
+/* ==================================== top energy consuming equipment (3159:8586) */
+
+.card--gap-22 {
+  gap: 22px;
+}
+
+.equip {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 100%;
+}
+
+.equip__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-default);
+}
+
+/* the last row keeps its 10px bottom padding but drops the rule */
+.equip__row:last-child {
+  border-bottom: 0;
+}
+
+.equip__name {
+  display: flex;
+  flex: 1 0 0;
+  min-width: 136px;
+  align-items: center;
+  gap: 8px;
+}
+
+.equip__label {
+  flex: 1 0 0;
+  min-width: 0;
+  font-size: 14px;
+  line-height: normal;
+  color: var(--text-secondary);
+}
+
+/* header labels are 14px Medium in text/primary — heavier than the rows */
+.equip__head-label {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: normal;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.equip__head-label--first {
+  width: 186px;
+}
+
+.equip__figures {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 220px;
+  flex-shrink: 0;
+}
+
+.equip__figures--head {
+  justify-content: space-between;
+}
+
+.equip__consumption,
+.equip__percent {
+  font-size: 14px;
+  line-height: normal;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.equip__bar-wrap {
+  display: flex;
+  flex: 1 0 0;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.equip__bar {
+  display: block;
+  height: 6px;
+  border-radius: 10px;
+  background: var(--status-success-icon);
+  flex-shrink: 0;
 }
 
 .meter__value {
   width: 42px;
   text-align: right;
   flex-shrink: 0;
-}
-
-/* power quality variant — grey header band */
-.table--banded th {
-  padding: 8px 10px;
-  background: var(--background-tertiary);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  border-bottom: 0;
-}
-
-.table--banded th:first-child {
-  border-radius: 8px 0 0 8px;
-}
-
-.table--banded th:last-child {
-  border-radius: 0 8px 8px 0;
-}
-
-.table--banded td {
-  padding: 9px 10px;
-}
-
-.table--banded td:first-child {
-  color: var(--text-primary);
-}
-
-.table--banded .table__avg {
-  font-weight: 600;
 }
 
 /* ======================================================== utility overview */
@@ -1066,66 +1240,99 @@ button {
 
 /* ========================================================= energy intensity */
 
+/* ================================================ energy intensity (3159:8796) */
+
 .intensity {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   gap: 16px;
   width: 100%;
+  flex-shrink: 0;
+  padding: 2px 16px;
 }
 
+/* stat columns are centre-aligned, not left */
 .intensity__stat {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
   flex: 1 0 0;
   min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.intensity__stat + .intensity__stat {
-  padding-left: 16px;
-  border-left: 1px solid var(--border-default);
+/* standalone 36px rule between columns */
+.intensity__rule {
+  width: 1px;
+  height: 36px;
+  flex-shrink: 0;
+  background: var(--border-default);
 }
 
 .intensity__label {
-  font-size: 12px;
+  width: 100%;
+  font-size: 13px;
+  line-height: normal;
+  text-align: center;
   color: var(--text-secondary);
 }
 
+.intensity__figure {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
 .intensity__value {
+  width: 100%;
   font-size: 18px;
   font-weight: 600;
   line-height: 22px;
-  color: var(--text-primary);
-}
-
-.intensity__value--brand {
-  color: var(--brand-primary);
+  text-align: center;
 }
 
 .intensity__unit {
-  font-size: 11px;
-  color: var(--text-tertiary);
+  width: 100%;
+  font-size: 12px;
+  line-height: 15px;
+  text-align: center;
+  color: var(--status-info-text);
 }
 
 .intensity__improve {
-  font-size: 18px;
+  width: 100%;
+  font-size: 20px;
   font-weight: 600;
   line-height: 22px;
-  color: var(--brand-primary);
+  text-align: center;
+  color: var(--text-brand);
 }
 
-/* ======================================================== saving trend head */
+/* ============================================= saving trend head (3159:8880) */
+
+.trend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  flex-shrink: 0;
+  padding: 2px 16px;
+}
 
 .trend__label {
   font-size: 12px;
+  line-height: normal;
   color: var(--text-secondary);
 }
 
 .trend__value {
   font-size: 20px;
   font-weight: 600;
-  line-height: 24px;
-  color: var(--status-success-strong);
+  line-height: 22px;
+  color: var(--status-success-text);
+  white-space: nowrap;
 }
 
 /* ================================================================ tooltip */

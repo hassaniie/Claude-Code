@@ -1,8 +1,12 @@
 import { energyBreakdown } from '../../data/dashboard';
 
-const SIZE = 140;
-const R = 52;
-const STROKE = 26;
+/**
+ * Figma 3159:8537 — a 166px square. Outer radius 83, inner hole radius ~45,
+ * giving a 38px ring at a 64px mid-stroke radius.
+ */
+const SIZE = 166;
+const R = 64;
+const STROKE = 38;
 /** degrees of blank space between slices, matching the design's separation */
 const GAP = 2;
 
@@ -44,10 +48,11 @@ export function DonutChart() {
         })}
       </g>
 
-      <text className="donut__total" x={SIZE / 2} y={SIZE / 2 + 2} textAnchor="middle">
+      {/* centre stack: 20/20 Bold + 5px gap + 12/14 Regular, centred at (83,83) */}
+      <text className="donut__total" x="83" y="80" textAnchor="middle">
         {energyBreakdown.total}
       </text>
-      <text className="donut__unit" x={SIZE / 2} y={SIZE / 2 + 18} textAnchor="middle">
+      <text className="donut__unit" x="83" y="99" textAnchor="middle">
         {energyBreakdown.unit}
       </text>
     </svg>

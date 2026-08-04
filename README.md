@@ -52,6 +52,19 @@ All copy and figures live in `src/data/dashboard.ts`, transcribed from the
 design. Components are presentational, so wiring this to a real API means
 replacing that one module.
 
+## Fidelity
+
+Every card has been reconciled against its own Figma node rather than against
+the full-page screenshot. Per-card values that differ from the generic card
+pattern — 14px / 19px / 22px stack gaps, the full-bleed row-4 cards, the
+Power Quality zebra striping, the hand-set equipment bar widths — are
+transcribed from the node data and annotated in code with the node ID.
+
+Row heights are applied as `min-height` rather than `height`. Browser text
+metrics land a few pixels off Figma's, and a hard height silently truncates
+the last row of the denser cards; `min-height` holds the design at rest and
+lets a card grow instead of clipping.
+
 ## Known deviations from the design
 
 Two things could not be reproduced exactly, both documented in code:

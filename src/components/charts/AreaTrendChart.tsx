@@ -13,7 +13,8 @@ interface AreaTrendChartProps {
   height?: number;
 }
 
-const W = 420;
+/** cards in row 4 are 442 wide and the chart is full-bleed within them */
+const W = 442;
 
 /**
  * Shared single-series area chart, used by "Energy Intensity" (3159:8820)
@@ -29,7 +30,8 @@ export function AreaTrendChart({
   ariaLabel,
   height = 140,
 }: AreaTrendChartProps) {
-  const plot: Plot = { x0: 32, x1: W - 8, y0: 10, y1: height - 26 };
+  // right inset leaves room for the last x label to centre without clipping
+  const plot: Plot = { x0: 32, x1: W - 26, y0: 10, y1: height - 26 };
   const yMax = Math.max(...yTicks);
   const points: [number, number][] = series.map((v, i) => [
     scaleX(i, series.length, plot),

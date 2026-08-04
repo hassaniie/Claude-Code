@@ -16,14 +16,13 @@
  */
 import {
   Activity,
+  AirVent,
   BadgePercent,
   BatteryCharging,
   Bell,
-  Box,
   ChevronDown,
   ChevronRight,
   ClipboardList,
-  Fan,
   Flame,
   Gauge,
   Grid2x2,
@@ -35,15 +34,17 @@ import {
   PanelLeft,
   PieChart,
   Plug,
+  Projector,
   RotateCw,
+  Router,
   Search,
   Server,
   Settings,
-  Snowflake,
   SquareActivity,
   Sun,
   TrendingUp,
   Users,
+  WashingMachine,
   Wind,
   Zap,
   type LucideIcon,
@@ -88,11 +89,11 @@ const registry: Record<string, [LucideIcon, string]> = {
   flame: [Flame, 'Bold / Nature, Travel / Flame'],
 
   /* ---- equipment table ---- */
-  boiler: [Box, 'Linear / Home, Furniture / Boiler'],
-  chiller: [Snowflake, 'Linear / Weather / Snowflake'],
-  compressor: [Wind, 'Linear / Weather / Wind'],
-  productionLine: [Server, 'Linear / Industry / Conveyor'],
-  ahu: [Fan, 'Linear / Weather / Fan'],
+  boiler: [WashingMachine, 'Outline / Home, Furniture / Washing Machine'],
+  chiller: [AirVent, 'Outline / Home, Furniture / Condicioner'],
+  compressor: [Wind, 'Outline / Weather / Wind'],
+  productionLine: [Router, 'Linear / Network, IT, Programming / Wi-Fi Router'],
+  ahu: [Projector, 'Linear / Electronic, Devices / Projector'],
 };
 
 export interface IconProps {
