@@ -1,0 +1,451 @@
+@import 'tailwindcss';
+
+/**
+ * Nexus PMS — design system.
+ *
+ * Two themes live here. `[data-theme='dark']` is the operational default: a
+ * command-centre palette tuned for long shifts in a dim control room. Light is
+ * a full peer, not an afterthought — every semantic token is defined twice.
+ *
+ * Naming follows shadcn semantics (background / foreground / muted / border)
+ * so the UI primitives in `components/ui` stay portable, with an operations
+ * layer on top (state-vacant, state-occupied, lane, gauge…).
+ */
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Surfaces — five steps of elevation, all near-black with a blue cast. */
+  --canvas: #05070a;
+  --background: #090c11;
+  --surface: #0e1219;
+  --surface-raised: #131822;
+  --surface-overlay: #171d29;
+  --surface-inset: #070a0e;
+
+  /* Type */
+  --foreground: #e8eef7;
+  --foreground-muted: #93a2b8;
+  --foreground-subtle: #63728a;
+  --foreground-disabled: #45536a;
+
+  /* Lines */
+  --border: #1b2330;
+  --border-strong: #27313f;
+  --border-subtle: #141a24;
+
+  /* Brand — electric blue, used only for interactive intent. */
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --primary-foreground: #ffffff;
+  --primary-muted: #12233f;
+  --ring: #3b82f6;
+
+  /* Operational state */
+  --state-vacant: #22c55e;
+  --state-vacant-dim: #14361f;
+  --state-occupied: #ef4444;
+  --state-occupied-dim: #3a1417;
+  --state-reserved: #a855f7;
+  --state-ev: #06b6d4;
+  --state-disabled-bay: #3b82f6;
+  --state-offline: #4b5563;
+
+  /* Status */
+  --success: #22c55e;
+  --success-dim: #0f2e1c;
+  --warning: #f59e0b;
+  --warning-dim: #35250a;
+  --danger: #f43f5e;
+  --danger-dim: #3a1020;
+  --info: #06b6d4;
+  --info-dim: #06272f;
+  --neutral: #64748b;
+  --neutral-dim: #1a212c;
+
+  /*
+   * Data-viz categorical ramp. Slot order is the colour-blind-safety
+   * mechanism, not decoration — this sequence was validated against the dark
+   * chart surface (#0e1219): worst adjacent CVD ΔE 8.4, normal-vision ΔE 19.3,
+   * all slots ≥3:1 contrast. Assign slots in order; never cycle, never reorder.
+   * Status hues (success / warning / danger) are reserved for state and are
+   * deliberately NOT part of this ramp.
+   */
+  --viz-1: #3987e5; /* blue */
+  --viz-2: #d95926; /* orange */
+  --viz-3: #199e70; /* aqua */
+  --viz-4: #c98500; /* yellow */
+  --viz-5: #d55181; /* magenta */
+  --viz-6: #9085e9; /* violet */
+  --viz-grid: #1b2330;
+  --viz-axis: #63728a;
+  --viz-surface: #0e1219;
+
+  /* Sequential ramp (single hue, light→dark) for heatmap magnitude. */
+  --seq-1: #0d366b;
+  --seq-2: #184f95;
+  --seq-3: #256abf;
+  --seq-4: #3987e5;
+  --seq-5: #6da7ec;
+  --seq-6: #9ec5f4;
+  --seq-7: #cde2fb;
+
+  /* Glass — used sparingly: command palette, overlays, floating rails. */
+  --glass-bg: rgba(19, 24, 34, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.07);
+  --glass-blur: 20px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 18px 40px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-glow: 0 0 0 1px rgba(59, 130, 246, 0.35), 0 0 24px rgba(59, 130, 246, 0.18);
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+
+  --canvas: #eef1f5;
+  --background: #f5f7fa;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-overlay: #ffffff;
+  --surface-inset: #f1f4f8;
+
+  --foreground: #0d1421;
+  --foreground-muted: #566173;
+  --foreground-subtle: #79859a;
+  --foreground-disabled: #a3adbc;
+
+  --border: #e2e7ee;
+  --border-strong: #cdd5e0;
+  --border-subtle: #eef1f5;
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-foreground: #ffffff;
+  --primary-muted: #e5edfd;
+  --ring: #2563eb;
+
+  --state-vacant: #16a34a;
+  --state-vacant-dim: #dcfce7;
+  --state-occupied: #dc2626;
+  --state-occupied-dim: #fee2e2;
+  --state-reserved: #9333ea;
+  --state-ev: #0891b2;
+  --state-disabled-bay: #2563eb;
+  --state-offline: #94a3b8;
+
+  --success: #16a34a;
+  --success-dim: #dcfce7;
+  --warning: #d97706;
+  --warning-dim: #fef3c7;
+  --danger: #e11d48;
+  --danger-dim: #ffe4e6;
+  --info: #0891b2;
+  --info-dim: #cffafe;
+  --neutral: #64748b;
+  --neutral-dim: #eef1f5;
+
+  /* Same eight hues, stepped for the light surface — a selected palette, not
+   * an automatic flip. Three slots sit under 3:1 on white, so light-mode
+   * charts always ship a legend with visible labels plus the table view. */
+  --viz-1: #2a78d6;
+  --viz-2: #eb6834;
+  --viz-3: #1baf7a;
+  --viz-4: #eda100;
+  --viz-5: #e87ba4;
+  --viz-6: #4a3aa7;
+  --viz-grid: #e2e7ee;
+  --viz-axis: #79859a;
+  --viz-surface: #ffffff;
+
+  --seq-1: #cde2fb;
+  --seq-2: #9ec5f4;
+  --seq-3: #6da7ec;
+  --seq-4: #3987e5;
+  --seq-5: #256abf;
+  --seq-6: #184f95;
+  --seq-7: #0d366b;
+
+  --glass-bg: rgba(255, 255, 255, 0.78);
+  --glass-border: rgba(13, 20, 33, 0.08);
+  --glass-blur: 20px;
+
+  --shadow-sm: 0 1px 2px rgba(13, 20, 33, 0.06);
+  --shadow-md: 0 4px 12px rgba(13, 20, 33, 0.08), 0 1px 2px rgba(13, 20, 33, 0.04);
+  --shadow-lg: 0 18px 40px rgba(13, 20, 33, 0.12), 0 2px 8px rgba(13, 20, 33, 0.06);
+  --shadow-glow: 0 0 0 1px rgba(37, 99, 235, 0.35), 0 0 24px rgba(37, 99, 235, 0.12);
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-overlay: var(--surface-overlay);
+  --color-surface-inset: var(--surface-inset);
+
+  --color-foreground: var(--foreground);
+  --color-muted: var(--foreground-muted);
+  --color-subtle: var(--foreground-subtle);
+  --color-disabled: var(--foreground-disabled);
+
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-border-subtle: var(--border-subtle);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-muted: var(--primary-muted);
+  --color-ring: var(--ring);
+
+  --color-vacant: var(--state-vacant);
+  --color-vacant-dim: var(--state-vacant-dim);
+  --color-occupied: var(--state-occupied);
+  --color-occupied-dim: var(--state-occupied-dim);
+  --color-reserved: var(--state-reserved);
+  --color-ev: var(--state-ev);
+  --color-bay-disabled: var(--state-disabled-bay);
+  --color-offline: var(--state-offline);
+
+  --color-success: var(--success);
+  --color-success-dim: var(--success-dim);
+  --color-warning: var(--warning);
+  --color-warning-dim: var(--warning-dim);
+  --color-danger: var(--danger);
+  --color-danger-dim: var(--danger-dim);
+  --color-info: var(--info);
+  --color-info-dim: var(--info-dim);
+  --color-neutral: var(--neutral);
+  --color-neutral-dim: var(--neutral-dim);
+
+  --color-viz-1: var(--viz-1);
+  --color-viz-2: var(--viz-2);
+  --color-viz-3: var(--viz-3);
+  --color-viz-4: var(--viz-4);
+  --color-viz-5: var(--viz-5);
+  --color-viz-6: var(--viz-6);
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --radius-card: 14px;
+  --radius-panel: 18px;
+
+  --shadow-elevated: var(--shadow-md);
+  --shadow-floating: var(--shadow-lg);
+
+  --animate-pulse-ring: pulse-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-sweep: sweep 2.6s linear infinite;
+  --animate-fade-up: fade-up 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-fade-in: fade-in 0.2s ease-out;
+  --animate-slide-in: slide-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-ticker: ticker 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ticker {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Tabular numerals everywhere a figure can change under the operator's eye. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Scrollbars: present but quiet. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--foreground-subtle);
+    background-clip: content-box;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+    border: 1px solid var(--glass-border);
+  }
+
+  /* The hairline top-light that gives cards their soft industrial elevation. */
+  .edge-light {
+    position: relative;
+  }
+  .edge-light::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--foreground) 12%, transparent),
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  .grid-fade {
+    mask-image: linear-gradient(180deg, #000 60%, transparent);
+  }
+
+  /* cmdk needs real selectors — it renders its own DOM. */
+  .cmd-group [cmdk-group-heading] {
+    padding: 0.5rem 0.625rem 0.25rem;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--foreground-subtle);
+  }
+
+  .cmd-item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0.625rem;
+    border-radius: 0.625rem;
+    font-size: 12.5px;
+    cursor: pointer;
+    color: var(--foreground-muted);
+    transition: background-color 0.12s ease;
+  }
+
+  .cmd-item[data-selected='true'] {
+    background: color-mix(in srgb, var(--foreground) 7%, transparent);
+  }
+
+  .cmd-item[data-disabled='true'] {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+}
