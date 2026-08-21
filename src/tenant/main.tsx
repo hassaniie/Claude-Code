@@ -2,8 +2,8 @@ import { StrictMode, Suspense, lazy, useEffect, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import {
-  AlarmClock, BadgePercent, BarChart3, Bell, Building2, CalendarClock, DoorOpen, FileBarChart,
-  Gauge, History, Repeat, Settings, Users, Wallet, Zap,
+  AlarmClock, BarChart3, Bell, Building2, CalendarClock, DoorOpen, FileBarChart,
+  History, Repeat, Settings, Users,
 } from 'lucide-react';
 import { AdminShell, PortalShell } from './app/Shell';
 import { SessionProvider, useSession } from './store/session';
@@ -25,7 +25,22 @@ const AdminDashboard = lazy(() => import('./routes/admin/Dashboard'));
 const Tenants = lazy(() => import('./routes/admin/Tenants'));
 const TenantOnboarding = lazy(() => import('./routes/admin/TenantOnboarding'));
 const TenantDetail = lazy(() => import('./routes/admin/TenantDetail'));
+
+const AdminEnergyOverview = lazy(() => import('./routes/admin/energy/Overview'));
+const AdminConsumption = lazy(() => import('./routes/admin/energy/Consumption'));
+const AdminMeters = lazy(() => import('./routes/admin/energy/Meters'));
+const AdminTariffs = lazy(() => import('./routes/admin/energy/Tariffs'));
+const AdminBilling = lazy(() => import('./routes/admin/energy/Billing'));
+const AdminEnergyAlerts = lazy(() => import('./routes/admin/energy/Alerts'));
+
 const PortalHome = lazy(() => import('./routes/portal/Home'));
+const EnergyLayout = lazy(() => import('./routes/portal/energy/EnergyLayout'));
+const PEOverview = lazy(() => import('./routes/portal/energy/Overview'));
+const PEConsumption = lazy(() => import('./routes/portal/energy/Consumption'));
+const PEDemand = lazy(() => import('./routes/portal/energy/Demand'));
+const PEDetails = lazy(() => import('./routes/portal/energy/Details'));
+const PEBilling = lazy(() => import('./routes/portal/energy/Billing'));
+const PEAlerts = lazy(() => import('./routes/portal/energy/Alerts'));
 
 const L = ({ children }: { children: ReactNode }) => <Suspense fallback={<LoadingState label="Loading…" />}>{children}</Suspense>;
 
@@ -43,7 +58,6 @@ function PortalLayout() {
 }
 
 /* Section scaffolds — replaced with full builds through phases 3–6. */
-const P3 = 'Phase 3 · Energy';
 const P4 = 'Phase 4 · Visitors';
 const P5 = 'Phase 5 · Service Center';
 const P6 = 'Phase 6 · Cross-system';
@@ -63,12 +77,12 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/admin/tenants/new" element={<L><TenantOnboarding /></L>} />
             <Route path="/admin/tenants/:id" element={<L><TenantDetail /></L>} />
 
-            <Route path="/admin/energy" element={<Scaf title="Energy Overview" icon={Zap} phase={P3} description="Park-wide energy intelligence for the admin." points={['Consumption, load, peak demand, charges', 'Peak vs off-peak comparison', 'Highest consuming tenants, offline meters']} />} />
-            <Route path="/admin/energy/consumption" element={<Scaf title="Tenant Consumption" icon={BarChart3} phase={P3} description="Compare consumption across tenants." points={['Per-tenant consumption ranking and trends', 'Date ranges and drill-down', 'Export-ready tables']} />} />
-            <Route path="/admin/energy/meters" element={<Scaf title="Meters" icon={Gauge} phase={P3} description="The meter registry — infrastructure mains and tenant sub-meters." points={['Main vs sub-meter clearly distinguished', 'Live electrical snapshot per meter', 'Status, health and last-reading tracking']} />} />
-            <Route path="/admin/energy/tariffs" element={<Scaf title="Tariffs & Rates" icon={BadgePercent} phase={P3} description="Globally-configured rates with effective periods." points={['Energy, genset, peak and off-peak rates', 'Effective periods preserve historical bills', 'Impact preview before applying a change']} />} />
-            <Route path="/admin/energy/billing" element={<Scaf title="Charges & Billing" icon={Wallet} phase={P3} description="Charges and invoices across tenants." points={['Billing periods, breakdown and payment status', 'Downloadable invoice architecture', 'Outstanding and overdue tracking']} />} />
-            <Route path="/admin/energy/alerts" element={<Scaf title="Energy Alerts" icon={Bell} phase={P3} description="Active and historical energy alerts." points={['Severity, source, tenant and meter', 'Acknowledge and resolve', 'Configured thresholds per tenant']} />} />
+            <Route path="/admin/energy" element={<L><AdminEnergyOverview /></L>} />
+            <Route path="/admin/energy/consumption" element={<L><AdminConsumption /></L>} />
+            <Route path="/admin/energy/meters" element={<L><AdminMeters /></L>} />
+            <Route path="/admin/energy/tariffs" element={<L><AdminTariffs /></L>} />
+            <Route path="/admin/energy/billing" element={<L><AdminBilling /></L>} />
+            <Route path="/admin/energy/alerts" element={<L><AdminEnergyAlerts /></L>} />
 
             <Route path="/admin/visitors" element={<Scaf title="Visitor Operations" icon={DoorOpen} phase={P4} description="Reception-integrated visitor operations." points={['Overview across scheduled, inside and overstaying', 'Tenant, date, status and building filters', 'Visit timeline and reception state updates']} />} />
             <Route path="/admin/visitors/scheduled" element={<Scaf title="Scheduled Visitors" icon={CalendarClock} phase={P4} description="Everyone expected across the park." points={['Filter by tenant, date and building', 'Verify at reception and mark in-building', 'Full visitor details']} />} />
@@ -91,12 +105,14 @@ createRoot(document.getElementById('root')!).render(
           <Route element={<PortalLayout />}>
             <Route path="/portal" element={<L><PortalHome /></L>} />
 
-            <Route path="/portal/energy" element={<Scaf title="Energy — Overview" icon={Zap} phase={P3} description="How much energy are we using, and what are we being charged?" points={['Current load, demand and period consumption', 'Consumption and demand over time', 'Peak vs off-peak, historical comparison']} />} />
-            <Route path="/portal/energy/consumption" element={<Scaf title="Energy — Consumption" icon={BarChart3} phase={P3} description="Consumption over time with flexible date ranges." points={['Today, 7/30 days, this/previous month, custom', 'Daily usage and comparisons', 'Table view for accessibility']} />} />
-            <Route path="/portal/energy/demand" element={<Scaf title="Energy — Demand & Load" icon={Gauge} phase={P3} description="Current load and demand trends." points={['Current and maximum demand', 'Load curve over time', 'Peak demand tracking']} />} />
-            <Route path="/portal/energy/details" element={<Scaf title="Energy — Details" icon={Gauge} phase={P3} description="Progressive exploration of electrical parameters." points={['Summary → Consumption → Demand → Electrical → Historical', 'Voltage, current, power factor, frequency', 'Reactive and apparent power']} />} />
-            <Route path="/portal/energy/billing" element={<Scaf title="Energy — Billing & Charges" icon={Wallet} phase={P3} description="Complete billing and charge information." points={['Period, consumption and peak/off-peak split', 'Energy and genset charges with applicable rates', 'Historical bills and downloadable invoices']} />} />
-            <Route path="/portal/energy/alerts" element={<Scaf title="Energy — Alerts" icon={Bell} phase={P3} description="Relevant alerts for your organization." points={['Consumption, demand and cost thresholds', 'Meter offline and unusual usage', 'Severity and history']} />} />
+            <Route path="/portal/energy" element={<L><EnergyLayout /></L>}>
+              <Route index element={<L><PEOverview /></L>} />
+              <Route path="consumption" element={<L><PEConsumption /></L>} />
+              <Route path="demand" element={<L><PEDemand /></L>} />
+              <Route path="details" element={<L><PEDetails /></L>} />
+              <Route path="billing" element={<L><PEBilling /></L>} />
+              <Route path="alerts" element={<L><PEAlerts /></L>} />
+            </Route>
 
             <Route path="/portal/visitors" element={<Scaf title="Visitors — Upcoming" icon={DoorOpen} phase={P4} description="Who is visiting your organization." points={['Upcoming and scheduled visitors', 'Live in-building status', 'Quick access to schedule a visitor']} />} />
             <Route path="/portal/visitors/schedule" element={<Scaf title="Schedule a Visitor" icon={CalendarClock} phase={P4} description="Register an individual visitor for reception." points={['Clear required vs optional fields', 'Host, vehicle, purpose and timing', 'Visitor arrives and is verified at reception']} />} />
