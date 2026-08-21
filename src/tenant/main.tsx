@@ -1,15 +1,14 @@
 import { StrictMode, Suspense, lazy, useEffect, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
-import {
-  BarChart3, Bell, Building2, FileBarChart, History, Settings, Users,
-} from 'lucide-react';
+import { Bell, Building2, FileBarChart, Settings, Users } from 'lucide-react';
 import { AdminShell, PortalShell } from './app/Shell';
 import { SessionProvider, useSession } from './store/session';
 import { LoadingState } from './components/ui/data';
 import { scaffold } from './routes/Scaffold';
 import { AdminVisitorList } from './routes/admin/visitors/List';
 import { PortalVisitorList } from './routes/portal/visitors/List';
+import { PortalServiceList } from './routes/portal/service/List';
 import './styles/theme.css';
 
 /**
@@ -35,6 +34,9 @@ const AdminBilling = lazy(() => import('./routes/admin/energy/Billing'));
 const AdminEnergyAlerts = lazy(() => import('./routes/admin/energy/Alerts'));
 
 const AdminVisitorsOverview = lazy(() => import('./routes/admin/visitors/Overview'));
+const AdminServiceRequests = lazy(() => import('./routes/admin/service/Requests'));
+const AdminServiceBoard = lazy(() => import('./routes/admin/service/Board'));
+const AdminServicePerformance = lazy(() => import('./routes/admin/service/Performance'));
 
 const PortalHome = lazy(() => import('./routes/portal/Home'));
 const EnergyLayout = lazy(() => import('./routes/portal/energy/EnergyLayout'));
@@ -47,6 +49,8 @@ const PEAlerts = lazy(() => import('./routes/portal/energy/Alerts'));
 const VisitorsLayout = lazy(() => import('./routes/portal/visitors/VisitorsLayout'));
 const ScheduleVisitor = lazy(() => import('./routes/portal/visitors/Schedule'));
 const RecurringVisitors = lazy(() => import('./routes/portal/visitors/Recurring'));
+const ServiceLayout = lazy(() => import('./routes/portal/service/ServiceLayout'));
+const NewRequest = lazy(() => import('./routes/portal/service/New'));
 
 const L = ({ children }: { children: ReactNode }) => <Suspense fallback={<LoadingState label="Loading…" />}>{children}</Suspense>;
 
@@ -64,7 +68,6 @@ function PortalLayout() {
 }
 
 /* Section scaffolds — replaced with full builds through phases 3–6. */
-const P5 = 'Phase 5 · Service Center';
 const P6 = 'Phase 6 · Cross-system';
 
 createRoot(document.getElementById('root')!).render(
@@ -95,9 +98,9 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/admin/visitors/overstaying" element={<AdminVisitorList kind="overstaying" />} />
             <Route path="/admin/visitors/history" element={<AdminVisitorList kind="history" />} />
 
-            <Route path="/admin/service" element={<Scaf title="Service Requests" icon={BarChart3} phase={P5} description="A powerful service management workspace." points={['Table, board and detail views', 'Category, priority, status, tenant and overdue filters', 'Assign, update and resolve']} />} />
-            <Route path="/admin/service/board" element={<Scaf title="Service Board" icon={BarChart3} phase={P5} description="Kanban workflow across request states." points={['Submitted → Acknowledged → Assigned → In Progress → Waiting → Resolved', 'Drag-free status transitions', 'Priority and SLA signals']} />} />
-            <Route path="/admin/service/performance" element={<Scaf title="Service Performance" icon={BarChart3} phase={P5} description="Service center analytics." points={['Volume, category and priority distribution', 'Average resolution time', 'Overdue and per-tenant activity']} />} />
+            <Route path="/admin/service" element={<L><AdminServiceRequests /></L>} />
+            <Route path="/admin/service/board" element={<L><AdminServiceBoard /></L>} />
+            <Route path="/admin/service/performance" element={<L><AdminServicePerformance /></L>} />
 
             <Route path="/admin/reports" element={<Scaf title="Reports" icon={FileBarChart} phase={P6} description="Tenant, energy, visitor and service reports." points={['Date range selection and filtering', 'Export to CSV and print-ready PDF', 'Standard report catalogue']} />} />
             <Route path="/admin/notifications" element={<Scaf title="Notifications" icon={Bell} phase={P6} description="The shared notification center." points={['Energy, visitor and service categories', 'In-app now, email/SMS/push architecture ready', 'Mark read and jump to source']} />} />
@@ -127,9 +130,11 @@ createRoot(document.getElementById('root')!).render(
               <Route path="history" element={<PortalVisitorList kind="history" />} />
             </Route>
 
-            <Route path="/portal/service" element={<Scaf title="Service Center — My Requests" icon={BarChart3} phase={P5} description="Your open and recent service requests." points={['Status, priority and last update', 'Timeline, comments and attachments', 'Confirm resolution, reopen, rate']} />} />
-            <Route path="/portal/service/new" element={<Scaf title="New Service Request" icon={BarChart3} phase={P5} description="Raise a request with the NASTP service team." points={['Title, description, category and priority', 'Office/location and attachments', 'Sensible required fields only']} />} />
-            <Route path="/portal/service/history" element={<Scaf title="Service History" icon={History} phase={P5} description="Your closed and confirmed requests." points={['Full request history', 'Ratings and feedback', 'Reopen where needed']} />} />
+            <Route path="/portal/service" element={<L><ServiceLayout /></L>}>
+              <Route index element={<PortalServiceList kind="open" />} />
+              <Route path="new" element={<L><NewRequest /></L>} />
+              <Route path="history" element={<PortalServiceList kind="history" />} />
+            </Route>
 
             <Route path="/portal/notifications" element={<Scaf title="Notifications" icon={Bell} phase={P6} description="Energy, visitor and service notifications for your organization." points={['Scoped strictly to your tenant', 'Mark read and jump to source', 'In-app now, more channels ready']} />} />
             <Route path="/portal/organization" element={<Scaf title="Organization" icon={Building2} phase={P6} description="Your organization profile and users." points={['Contacts, offices and meters', 'Users and roles', 'Contract and configuration summary']} />} />
