@@ -170,6 +170,23 @@ class Simulation {
     this.emit();
   }
 
+  setScheduleActive(id: string, active: boolean) {
+    const s = this.world.visitorSchedules.find((x) => x.id === id);
+    if (s) s.active = active;
+    this.emit();
+  }
+
+  addSchedule(schedule: import('./types').VisitorSchedule) {
+    this.world.visitorSchedules.unshift(schedule);
+    this.activity('visitor_scheduled', schedule.tenantId, 'Recurring visitor added', `${schedule.visitorName} · ${schedule.recurrence}`, schedule.host, 'visitor');
+    this.emit();
+  }
+
+  removeSchedule(id: string) {
+    this.world.visitorSchedules = this.world.visitorSchedules.filter((x) => x.id !== id);
+    this.emit();
+  }
+
   /* --- service center --- */
 
   submitRequest(input: Omit<ServiceRequest, 'id' | 'reference' | 'status' | 'createdAt' | 'updatedAt' | 'comments' | 'timeline' | 'attachments'> & { comments?: ServiceComment[]; attachments?: ServiceRequest['attachments'] }): ServiceRequest {

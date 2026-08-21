@@ -2,13 +2,14 @@ import { StrictMode, Suspense, lazy, useEffect, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import {
-  AlarmClock, BarChart3, Bell, Building2, CalendarClock, DoorOpen, FileBarChart,
-  History, Repeat, Settings, Users,
+  BarChart3, Bell, Building2, FileBarChart, History, Settings, Users,
 } from 'lucide-react';
 import { AdminShell, PortalShell } from './app/Shell';
 import { SessionProvider, useSession } from './store/session';
 import { LoadingState } from './components/ui/data';
 import { scaffold } from './routes/Scaffold';
+import { AdminVisitorList } from './routes/admin/visitors/List';
+import { PortalVisitorList } from './routes/portal/visitors/List';
 import './styles/theme.css';
 
 /**
@@ -33,6 +34,8 @@ const AdminTariffs = lazy(() => import('./routes/admin/energy/Tariffs'));
 const AdminBilling = lazy(() => import('./routes/admin/energy/Billing'));
 const AdminEnergyAlerts = lazy(() => import('./routes/admin/energy/Alerts'));
 
+const AdminVisitorsOverview = lazy(() => import('./routes/admin/visitors/Overview'));
+
 const PortalHome = lazy(() => import('./routes/portal/Home'));
 const EnergyLayout = lazy(() => import('./routes/portal/energy/EnergyLayout'));
 const PEOverview = lazy(() => import('./routes/portal/energy/Overview'));
@@ -41,6 +44,9 @@ const PEDemand = lazy(() => import('./routes/portal/energy/Demand'));
 const PEDetails = lazy(() => import('./routes/portal/energy/Details'));
 const PEBilling = lazy(() => import('./routes/portal/energy/Billing'));
 const PEAlerts = lazy(() => import('./routes/portal/energy/Alerts'));
+const VisitorsLayout = lazy(() => import('./routes/portal/visitors/VisitorsLayout'));
+const ScheduleVisitor = lazy(() => import('./routes/portal/visitors/Schedule'));
+const RecurringVisitors = lazy(() => import('./routes/portal/visitors/Recurring'));
 
 const L = ({ children }: { children: ReactNode }) => <Suspense fallback={<LoadingState label="Loading…" />}>{children}</Suspense>;
 
@@ -58,7 +64,6 @@ function PortalLayout() {
 }
 
 /* Section scaffolds — replaced with full builds through phases 3–6. */
-const P4 = 'Phase 4 · Visitors';
 const P5 = 'Phase 5 · Service Center';
 const P6 = 'Phase 6 · Cross-system';
 
@@ -84,11 +89,11 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/admin/energy/billing" element={<L><AdminBilling /></L>} />
             <Route path="/admin/energy/alerts" element={<L><AdminEnergyAlerts /></L>} />
 
-            <Route path="/admin/visitors" element={<Scaf title="Visitor Operations" icon={DoorOpen} phase={P4} description="Reception-integrated visitor operations." points={['Overview across scheduled, inside and overstaying', 'Tenant, date, status and building filters', 'Visit timeline and reception state updates']} />} />
-            <Route path="/admin/visitors/scheduled" element={<Scaf title="Scheduled Visitors" icon={CalendarClock} phase={P4} description="Everyone expected across the park." points={['Filter by tenant, date and building', 'Verify at reception and mark in-building', 'Full visitor details']} />} />
-            <Route path="/admin/visitors/inside" element={<Scaf title="Visitors In Building" icon={DoorOpen} phase={P4} description="Live in-building tracking." points={['Who is inside right now, by tenant', 'Expected departure and dwell time', 'Check-out from reception']} />} />
-            <Route path="/admin/visitors/overstaying" element={<Scaf title="Overstaying Visitors" icon={AlarmClock} phase={P4} description="Visitors past their expected departure." points={['Overstay detection against wall-clock time', 'Prominent, but not treated as a security incident', 'Notify the relevant tenant']} />} />
-            <Route path="/admin/visitors/history" element={<Scaf title="Visitor History" icon={History} phase={P4} description="The full visit ledger." points={['Search and filter across all visits', 'No-shows, cancellations and completed visits', 'Per-tenant visitor activity']} />} />
+            <Route path="/admin/visitors" element={<L><AdminVisitorsOverview /></L>} />
+            <Route path="/admin/visitors/scheduled" element={<AdminVisitorList kind="scheduled" />} />
+            <Route path="/admin/visitors/inside" element={<AdminVisitorList kind="inside" />} />
+            <Route path="/admin/visitors/overstaying" element={<AdminVisitorList kind="overstaying" />} />
+            <Route path="/admin/visitors/history" element={<AdminVisitorList kind="history" />} />
 
             <Route path="/admin/service" element={<Scaf title="Service Requests" icon={BarChart3} phase={P5} description="A powerful service management workspace." points={['Table, board and detail views', 'Category, priority, status, tenant and overdue filters', 'Assign, update and resolve']} />} />
             <Route path="/admin/service/board" element={<Scaf title="Service Board" icon={BarChart3} phase={P5} description="Kanban workflow across request states." points={['Submitted → Acknowledged → Assigned → In Progress → Waiting → Resolved', 'Drag-free status transitions', 'Priority and SLA signals']} />} />
@@ -114,11 +119,13 @@ createRoot(document.getElementById('root')!).render(
               <Route path="alerts" element={<L><PEAlerts /></L>} />
             </Route>
 
-            <Route path="/portal/visitors" element={<Scaf title="Visitors — Upcoming" icon={DoorOpen} phase={P4} description="Who is visiting your organization." points={['Upcoming and scheduled visitors', 'Live in-building status', 'Quick access to schedule a visitor']} />} />
-            <Route path="/portal/visitors/schedule" element={<Scaf title="Schedule a Visitor" icon={CalendarClock} phase={P4} description="Register an individual visitor for reception." points={['Clear required vs optional fields', 'Host, vehicle, purpose and timing', 'Visitor arrives and is verified at reception']} />} />
-            <Route path="/portal/visitors/recurring" element={<Scaf title="Recurring Visitors" icon={Repeat} phase={P4} description="Vendors, contractors and regular contacts." points={['Daily, weekly, monthly or custom recurrence', 'Pause, resume, edit future occurrences', 'Individual visit instances generated']} />} />
-            <Route path="/portal/visitors/inside" element={<Scaf title="Visitors Inside" icon={DoorOpen} phase={P4} description="Live status of visitors currently in the building." points={['Real-time in-building tracking', 'Expected departure and overstay signals', 'Visit timeline']} />} />
-            <Route path="/portal/visitors/history" element={<Scaf title="Visitor History" icon={History} phase={P4} description="Your organization's past visits." points={['Completed, cancelled and no-show visits', 'Search and filter', 'Visit details']} />} />
+            <Route path="/portal/visitors" element={<L><VisitorsLayout /></L>}>
+              <Route index element={<PortalVisitorList kind="upcoming" />} />
+              <Route path="schedule" element={<L><ScheduleVisitor /></L>} />
+              <Route path="recurring" element={<L><RecurringVisitors /></L>} />
+              <Route path="inside" element={<PortalVisitorList kind="inside" />} />
+              <Route path="history" element={<PortalVisitorList kind="history" />} />
+            </Route>
 
             <Route path="/portal/service" element={<Scaf title="Service Center — My Requests" icon={BarChart3} phase={P5} description="Your open and recent service requests." points={['Status, priority and last update', 'Timeline, comments and attachments', 'Confirm resolution, reopen, rate']} />} />
             <Route path="/portal/service/new" element={<Scaf title="New Service Request" icon={BarChart3} phase={P5} description="Raise a request with the NASTP service team." points={['Title, description, category and priority', 'Office/location and attachments', 'Sensible required fields only']} />} />
