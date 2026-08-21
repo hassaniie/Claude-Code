@@ -6,14 +6,16 @@ global styles stay isolated from one another.
 
 | Module | Entry | What it is |
 | ------ | ----- | ---------- |
-| **PMS — Parking Management System** | `/` (`index.html`) | Enterprise parking operations console. The active product; documented below. |
+| **PMS — Parking Management System** | `/` (`index.html`) | Enterprise parking operations console. Documented below. |
 | **EMS — Energy Monitoring System** | `/ems.html` | Earlier module, implemented from the *General BMS Design* Figma file. See [`docs/EMS.md`](docs/EMS.md). |
+| **NASTP Tenant Operations** | `/tenant.html` | Enterprise Tenant Operations ecosystem — NASTP Admin control plane + Tenant Portal. See [`docs/tenant-ops/`](docs/tenant-ops/). |
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173        (PMS)
-                   # http://localhost:5173/ems.html (EMS)
-npm run build      # typecheck + production bundle
+npm run dev        # http://localhost:5173           (PMS)
+                   # http://localhost:5173/ems.html    (EMS)
+                   # http://localhost:5173/tenant.html (Tenant Operations)
+npm run build      # typecheck + production bundle (all three entries)
 npm run typecheck
 ```
 
