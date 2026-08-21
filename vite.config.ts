@@ -12,6 +12,13 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
+      // Each module is its own entry point so their design systems and global
+      // styles stay isolated: PMS (index), EMS, and Tenant Operations.
+      input: {
+        pms: fileURLToPath(new URL('./index.html', import.meta.url)),
+        ems: fileURLToPath(new URL('./ems.html', import.meta.url)),
+        tenant: fileURLToPath(new URL('./tenant.html', import.meta.url)),
+      },
       output: {
         // Split the heavy third-party layers so a screen change never
         // re-downloads the chart engine or the primitives.
