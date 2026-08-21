@@ -1,14 +1,13 @@
 import { StrictMode, Suspense, lazy, useEffect, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
-import { Bell, Building2, FileBarChart, Settings, Users } from 'lucide-react';
 import { AdminShell, PortalShell } from './app/Shell';
 import { SessionProvider, useSession } from './store/session';
 import { LoadingState } from './components/ui/data';
-import { scaffold } from './routes/Scaffold';
 import { AdminVisitorList } from './routes/admin/visitors/List';
 import { PortalVisitorList } from './routes/portal/visitors/List';
 import { PortalServiceList } from './routes/portal/service/List';
+import { NotificationsPage } from './routes/NotificationsPage';
 import './styles/theme.css';
 
 /**
@@ -16,9 +15,8 @@ import './styles/theme.css';
  *
  * One entry, two experiences: the NASTP Admin control plane under `/admin` and
  * the Tenant Portal under `/portal`. HashRouter keeps deep links working when
- * the build is served as static files. Screens are added phase by phase (§54);
- * routes that are navigable but not yet deepened render an honest section
- * scaffold rather than a fake dashboard.
+ * the build is served as static files. Screens are code-split so the first
+ * paint of either experience never waits on the whole product.
  */
 
 const AdminDashboard = lazy(() => import('./routes/admin/Dashboard'));
@@ -52,6 +50,12 @@ const RecurringVisitors = lazy(() => import('./routes/portal/visitors/Recurring'
 const ServiceLayout = lazy(() => import('./routes/portal/service/ServiceLayout'));
 const NewRequest = lazy(() => import('./routes/portal/service/New'));
 
+const Reports = lazy(() => import('./routes/admin/Reports'));
+const AdminSettings = lazy(() => import('./routes/admin/Settings'));
+const Buildings = lazy(() => import('./routes/admin/Buildings'));
+const AdminUsers = lazy(() => import('./routes/admin/Users'));
+const Organization = lazy(() => import('./routes/portal/Organization'));
+
 const L = ({ children }: { children: ReactNode }) => <Suspense fallback={<LoadingState label="Loading…" />}>{children}</Suspense>;
 
 /** Keep the session's experience in step with the URL so the switcher, rail and
@@ -66,9 +70,6 @@ function PortalLayout() {
   useEffect(() => { if (experience !== 'portal') enterPortal(tenantId); }, [experience, enterPortal, tenantId]);
   return <PortalShell />;
 }
-
-/* Section scaffolds — replaced with full builds through phases 3–6. */
-const P6 = 'Phase 6 · Cross-system';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -102,11 +103,11 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/admin/service/board" element={<L><AdminServiceBoard /></L>} />
             <Route path="/admin/service/performance" element={<L><AdminServicePerformance /></L>} />
 
-            <Route path="/admin/reports" element={<Scaf title="Reports" icon={FileBarChart} phase={P6} description="Tenant, energy, visitor and service reports." points={['Date range selection and filtering', 'Export to CSV and print-ready PDF', 'Standard report catalogue']} />} />
-            <Route path="/admin/notifications" element={<Scaf title="Notifications" icon={Bell} phase={P6} description="The shared notification center." points={['Energy, visitor and service categories', 'In-app now, email/SMS/push architecture ready', 'Mark read and jump to source']} />} />
-            <Route path="/admin/settings" element={<Scaf title="Settings" icon={Settings} phase={P6} description="Preferences, theme and API diagnostics." points={['Theme, density and units', 'Live cadence controls', 'API fault injection to exercise every state']} />} />
-            <Route path="/admin/settings/buildings" element={<Scaf title="Buildings & Spaces" icon={Building2} phase={P6} description="The physical catalog." points={['Buildings, floors and offices', 'Main meter per floor', 'Occupancy and leasable area']} />} />
-            <Route path="/admin/settings/users" element={<Scaf title="Users" icon={Users} phase={P6} description="Administrative users and roles." points={['Admin role today, scalable to more', 'Role architecture without redesign', 'Access and audit']} />} />
+            <Route path="/admin/reports" element={<L><Reports /></L>} />
+            <Route path="/admin/notifications" element={<NotificationsPage scope="admin" />} />
+            <Route path="/admin/settings" element={<L><AdminSettings /></L>} />
+            <Route path="/admin/settings/buildings" element={<L><Buildings /></L>} />
+            <Route path="/admin/settings/users" element={<L><AdminUsers /></L>} />
           </Route>
 
           {/* -------------------------------------------------- Portal */}
@@ -136,8 +137,8 @@ createRoot(document.getElementById('root')!).render(
               <Route path="history" element={<PortalServiceList kind="history" />} />
             </Route>
 
-            <Route path="/portal/notifications" element={<Scaf title="Notifications" icon={Bell} phase={P6} description="Energy, visitor and service notifications for your organization." points={['Scoped strictly to your tenant', 'Mark read and jump to source', 'In-app now, more channels ready']} />} />
-            <Route path="/portal/organization" element={<Scaf title="Organization" icon={Building2} phase={P6} description="Your organization profile and users." points={['Contacts, offices and meters', 'Users and roles', 'Contract and configuration summary']} />} />
+            <Route path="/portal/notifications" element={<NotificationsPage scope="tenant" />} />
+            <Route path="/portal/organization" element={<L><Organization /></L>} />
           </Route>
 
           <Route path="*" element={<Navigate to="/admin" replace />} />
@@ -146,9 +147,3 @@ createRoot(document.getElementById('root')!).render(
     </SessionProvider>
   </StrictMode>,
 );
-
-/** Thin wrapper so route declarations stay one-liners. */
-function Scaf(props: { title: string; description: string; icon: Parameters<typeof scaffold>[0]['icon']; points: string[]; phase: string }) {
-  const C = scaffold(props);
-  return <C />;
-}
