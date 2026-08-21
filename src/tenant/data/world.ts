@@ -866,4 +866,15 @@ export function createWorld(seed = 20260821): World {
   };
 }
 
+/** Public helper for freshly-onboarded tenants: a deterministic reading series
+ *  for a given base load. Used by the onboarding commit path. */
+export function makeReadingSeries(baseKw: number, seed = 777) {
+  return buildReadings(mulberry32(seed), baseKw);
+}
+
+/** A live electrical snapshot for a given base load, for new sub-meters. */
+export function makeSnapshot(baseKw: number) {
+  return compute(baseKw, new Date(NOW).getHours());
+}
+
 export { NOW, DAY, HOUR, startOfToday, isPeakHour, tariffFor, rateOf, baseLoadFor };

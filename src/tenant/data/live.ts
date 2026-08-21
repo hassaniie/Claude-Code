@@ -243,6 +243,41 @@ class Simulation {
     this.emit();
   }
 
+  /**
+   * Commit a completed onboarding: insert the tenant, its offices, sub-meters
+   * and primary user, seed default alert rules and a starter reading series,
+   * and record the lifecycle activity. Everything the detail workspace renders
+   * exists immediately after this returns.
+   */
+  commitOnboarding(payload: {
+    tenant: Tenant;
+    offices: import('./types').OfficeSpace[];
+    meters: import('./types').Meter[];
+    user?: import('./types').TenantUser;
+    alertRules: import('./types').AlertRule[];
+    readings: { hourly: import('./types').MeterReading[]; daily: import('./types').MeterReading[]; monthly: import('./types').MeterReading[] };
+  }) {
+    const { tenant, offices, meters, user, alertRules, readings } = payload;
+    this.world.tenants.unshift(tenant);
+    this.world.tenantById[tenant.id] = tenant;
+    for (const o of offices) {
+      this.world.offices.push(o);
+      this.world.officeById[o.id] = o;
+    }
+    for (const m of meters) {
+      this.world.meters.push(m);
+      this.world.meterById[m.id] = m;
+      this.activity('meter_assigned', tenant.id, 'Meter assigned', `${m.name} (${m.serial})`, 'NASTP Admin', 'energy');
+    }
+    if (user) this.world.users.push(user);
+    this.world.alertRules[tenant.id] = alertRules;
+    this.world.readings[tenant.id] = readings;
+    this.activity('tenant_created', tenant.id, 'Tenant created', `${tenant.name} onboarded`, 'NASTP Admin', 'tenant');
+    if (tenant.status === 'active') this.activity('tenant_activated', tenant.id, 'Tenant activated', `${tenant.name} portal access created`, 'NASTP Admin', 'tenant');
+    if (user) this.activity('user_invited', tenant.id, 'Portal user invited', user.name, 'NASTP Admin', 'tenant');
+    this.emit();
+  }
+
   acknowledgeAlert(id: string) {
     const a = this.world.alerts.find((x) => x.id === id);
     if (a) a.status = 'acknowledged';

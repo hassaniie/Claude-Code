@@ -22,6 +22,9 @@ import './styles/theme.css';
  */
 
 const AdminDashboard = lazy(() => import('./routes/admin/Dashboard'));
+const Tenants = lazy(() => import('./routes/admin/Tenants'));
+const TenantOnboarding = lazy(() => import('./routes/admin/TenantOnboarding'));
+const TenantDetail = lazy(() => import('./routes/admin/TenantDetail'));
 const PortalHome = lazy(() => import('./routes/portal/Home'));
 
 const L = ({ children }: { children: ReactNode }) => <Suspense fallback={<LoadingState label="Loading…" />}>{children}</Suspense>;
@@ -39,8 +42,7 @@ function PortalLayout() {
   return <PortalShell />;
 }
 
-/* Section scaffolds — replaced with full builds through phases 2–6. */
-const P2 = 'Phase 2 · Tenant Management';
+/* Section scaffolds — replaced with full builds through phases 3–6. */
 const P3 = 'Phase 3 · Energy';
 const P4 = 'Phase 4 · Visitors';
 const P5 = 'Phase 5 · Service Center';
@@ -57,9 +59,9 @@ createRoot(document.getElementById('root')!).render(
           <Route element={<AdminLayout />}>
             <Route path="/admin" element={<L><AdminDashboard /></L>} />
 
-            <Route path="/admin/tenants" element={<Scaf title="All Tenants" icon={Building2} phase={P2} description="A management workspace over every tenant — search, filter and act." points={['Table and card views over all tenants', 'Building, floor, status and energy filters', 'Quick actions: open, activate, suspend, view portal']} />} />
-            <Route path="/admin/tenants/new" element={<Scaf title="Tenant Onboarding" icon={Building2} phase={P2} description="A guided, multi-step onboarding wizard with a live preview." points={['Seven steps: organization → spaces → energy → alerts → portal → review', 'Save as draft, autosave, and step validation', 'Live configuration summary and preview panel']} />} />
-            <Route path="/admin/tenants/:id" element={<Scaf title="Tenant Detail Workspace" icon={Building2} phase={P2} description="An operational workspace for a single tenant." points={['Overview, Spaces, Energy, Visitors, Service, Users, Configuration, Activity', 'Lifecycle actions with confirmation', 'Unified chronological activity timeline']} />} />
+            <Route path="/admin/tenants" element={<L><Tenants /></L>} />
+            <Route path="/admin/tenants/new" element={<L><TenantOnboarding /></L>} />
+            <Route path="/admin/tenants/:id" element={<L><TenantDetail /></L>} />
 
             <Route path="/admin/energy" element={<Scaf title="Energy Overview" icon={Zap} phase={P3} description="Park-wide energy intelligence for the admin." points={['Consumption, load, peak demand, charges', 'Peak vs off-peak comparison', 'Highest consuming tenants, offline meters']} />} />
             <Route path="/admin/energy/consumption" element={<Scaf title="Tenant Consumption" icon={BarChart3} phase={P3} description="Compare consumption across tenants." points={['Per-tenant consumption ranking and trends', 'Date ranges and drill-down', 'Export-ready tables']} />} />

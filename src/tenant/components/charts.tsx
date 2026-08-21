@@ -106,7 +106,7 @@ function LegendRow({ series, theme }: { series: SeriesSpec[]; theme: VizTheme })
   );
 }
 
-function DataTableView({ data, categoryKey, series }: { data: Array<Record<string, string | number>>; categoryKey: string; series: SeriesSpec[] }) {
+function DataTableView({ data, categoryKey, series }: { data: any[]; categoryKey: string; series: SeriesSpec[] }) {
   return (
     <div className="max-h-[260px] overflow-auto rounded-lg border border-border">
       <table className="w-full text-left text-[11.5px]">
@@ -133,7 +133,7 @@ function DataTableView({ data, categoryKey, series }: { data: Array<Record<strin
   );
 }
 
-export function ChartFrame({ children, data, categoryKey, series, height = 220, className, toolbar }: { children: ReactNode; data?: Array<Record<string, string | number>>; categoryKey?: string; series?: SeriesSpec[]; height?: number; className?: string; toolbar?: ReactNode }) {
+export function ChartFrame({ children, data, categoryKey, series, height = 220, className, toolbar }: { children: ReactNode; data?: any[]; categoryKey?: string; series?: SeriesSpec[]; height?: number; className?: string; toolbar?: ReactNode }) {
   const theme = useVizTheme();
   const [asTable, setAsTable] = useState(false);
   const canTable = Boolean(data && categoryKey && series);
@@ -178,7 +178,7 @@ export function TrendChart({
   fill = true,
   stacked,
 }: {
-  data: Array<Record<string, string | number>>;
+  data: any[];
   categoryKey?: string;
   series: SeriesSpec[];
   height?: number;
@@ -232,7 +232,7 @@ export function TrendChart({
   );
 }
 
-export function MultiLineChart({ data, categoryKey = 'label', series, height = 220, yFormatter = compact, valueFormatter, unit }: { data: Array<Record<string, string | number>>; categoryKey?: string; series: SeriesSpec[]; height?: number; yFormatter?: (v: number) => string; valueFormatter?: (v: number, key: string) => string; unit?: string }) {
+export function MultiLineChart({ data, categoryKey = 'label', series, height = 220, yFormatter = compact, valueFormatter, unit }: { data: any[]; categoryKey?: string; series: SeriesSpec[]; height?: number; yFormatter?: (v: number) => string; valueFormatter?: (v: number, key: string) => string; unit?: string }) {
   const theme = useVizTheme();
   return (
     <ChartFrame data={data} categoryKey={categoryKey} series={series} height={height}>
@@ -253,7 +253,7 @@ export function MultiLineChart({ data, categoryKey = 'label', series, height = 2
 
 /* --------------------------------------------------------------------- Bar */
 
-export function BarSeriesChart({ data, categoryKey = 'label', series, height = 220, stacked, horizontal, yFormatter = compact, valueFormatter, unit }: { data: Array<Record<string, string | number>>; categoryKey?: string; series: SeriesSpec[]; height?: number; stacked?: boolean; horizontal?: boolean; yFormatter?: (v: number) => string; valueFormatter?: (v: number, key: string) => string; unit?: string }) {
+export function BarSeriesChart({ data, categoryKey = 'label', series, height = 220, stacked, horizontal, yFormatter = compact, valueFormatter, unit }: { data: any[]; categoryKey?: string; series: SeriesSpec[]; height?: number; stacked?: boolean; horizontal?: boolean; yFormatter?: (v: number) => string; valueFormatter?: (v: number, key: string) => string; unit?: string }) {
   const theme = useVizTheme();
   return (
     <ChartFrame data={data} categoryKey={categoryKey} series={series} height={height}>
